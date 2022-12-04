@@ -511,23 +511,25 @@ var _notiflix = require("notiflix");
 var _notiflixDefault = parcelHelpers.interopDefault(_notiflix);
 var _simplelightbox = require("simplelightbox");
 var _simplelightboxDefault = parcelHelpers.interopDefault(_simplelightbox);
-const searchForm = document.querySelector("#search-form");
-const gallery = document.querySelector(".gallery");
-const loadMoreBtn = document.querySelector(".btn-load-more");
+const refs = {
+    searchForm: document.querySelector("#search-form"),
+    gallery: document.querySelector(".gallery"),
+    loadMoreBtn: document.querySelector(".btn-load-more")
+};
 let query = "";
 let page = 1;
 let simpleLightBox;
 const per_page = 40;
-searchForm.addEventListener("submit", onSearchForm);
-loadMoreBtn.addEventListener("click", onLoadBtn);
+refs.searchForm.addEventListener("submit", onSearchForm);
+refs.loadMoreBtn.addEventListener("click", onLoadBtn);
 onScroll();
 onToTopBtn();
 function onSearchForm(event) {
     event.preventDefault();
     page = 1;
     query = event.currentTarget.searchQuery.value.trim();
-    gallery.innerHTML = "";
-    loadMoreBtn.classList.add("is-hidden");
+    refs.gallery.innerHTML = "";
+    refs.loadMoreBtn.classList.add("is-hidden");
     if (query === "") {
         notEmptySearch();
         return;
@@ -538,10 +540,10 @@ function onSearchForm(event) {
             (0, _createCard.createCard)(data.hits);
             simpleLightBox = new (0, _simplelightboxDefault.default)(".gallery a").refresh();
             howMuchImg(data);
-            if (data.totalHits > per_page) loadMoreBtn.classList.remove("is-hidden");
+            if (data.totalHits > per_page) refs.loadMoreBtn.classList.remove("is-hidden");
         }
     }).catch((error)=>console.log(error)).finally(()=>{
-        searchForm.reset();
+        refs.searchForm.reset();
     });
 }
 function onLoadBtn() {
@@ -552,7 +554,7 @@ function onLoadBtn() {
         simpleLightBox = new (0, _simplelightboxDefault.default)(".gallery a").refresh();
         const totalPages = Math.ceil(data.totalHits / per_page);
         if (page > totalPages) {
-            loadMoreBtn.classList.add("is-hidden");
+            refs.loadMoreBtn.classList.add("is-hidden");
             endImg();
         }
     }).catch((error)=>console.log(error));
