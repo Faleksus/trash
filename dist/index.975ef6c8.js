@@ -507,7 +507,6 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 var _indexScss = require("./sass/index.scss");
 var _fetchImages = require("./js/fetchImages");
 var _createCard = require("./js/createCard");
-var _scroll = require("./js/scroll");
 var _notiflix = require("notiflix");
 var _notiflixDefault = parcelHelpers.interopDefault(_notiflix);
 var _simplelightbox = require("simplelightbox");
@@ -518,73 +517,73 @@ const loadMoreBtn = document.querySelector(".btn-load-more");
 let query = "";
 let page = 1;
 let simpleLightBox;
-const perPage = 40;
+const per_page = 40;
 searchForm.addEventListener("submit", onSearchForm);
-loadMoreBtn.addEventListener("click", onLoadMoreBtn);
-(0, _scroll.onScroll)();
-(0, _scroll.onToTopBtn)();
-function onSearchForm(e) {
-    e.preventDefault();
-    window.scrollTo({
-        top: 0
-    });
+loadMoreBtn.addEventListener("click", onLoadBtn);
+onScroll();
+onToTopBtn();
+function onSearchForm(event) {
+    event.preventDefault();
     page = 1;
-    query = e.currentTarget.searchQuery.value.trim();
+    query = event.currentTarget.searchQuery.value.trim();
     gallery.innerHTML = "";
     loadMoreBtn.classList.add("is-hidden");
     if (query === "") {
-        alertNoEmptySearch();
+        notEmptySearch();
         return;
     }
-    (0, _fetchImages.fetchImages)(query, page, perPage).then(({ data  })=>{
-        if (data.totalHits === 0) alertNoImagesFound();
+    (0, _fetchImages.fetchImages)(query, page, per_page).then(({ data  })=>{
+        if (data.totalHits === 0) notFoundImg();
         else {
             (0, _createCard.createCard)(data.hits);
             simpleLightBox = new (0, _simplelightboxDefault.default)(".gallery a").refresh();
-            alertImagesFound(data);
-            if (data.totalHits > perPage) loadMoreBtn.classList.remove("is-hidden");
+            howMuchImg(data);
+            if (data.totalHits > per_page) loadMoreBtn.classList.remove("is-hidden");
         }
     }).catch((error)=>console.log(error)).finally(()=>{
         searchForm.reset();
     });
 }
-function onLoadMoreBtn() {
+function onLoadBtn() {
     page += 1;
     simpleLightBox.destroy();
-    (0, _fetchImages.fetchImages)(query, page, perPage).then(({ data  })=>{
+    (0, _fetchImages.fetchImages)(query, page, per_page).then(({ data  })=>{
         (0, _createCard.createCard)(data.hits);
         simpleLightBox = new (0, _simplelightboxDefault.default)(".gallery a").refresh();
-        const totalPages = Math.ceil(data.totalHits / perPage);
+        const totalPages = Math.ceil(data.totalHits / per_page);
         if (page > totalPages) {
             loadMoreBtn.classList.add("is-hidden");
-            alertEndOfSearch();
+            endImg();
         }
     }).catch((error)=>console.log(error));
 }
-function alertImagesFound(data) {
+function howMuchImg(data) {
     (0, _notiflixDefault.default).Notify.success(`Hooray! We found ${data.totalHits} images.`);
 }
-function alertNoEmptySearch() {
+function notEmptySearch() {
     (0, _notiflixDefault.default).Notify.failure("The search string cannot be empty. Please specify your search query.");
 }
-function alertNoImagesFound() {
+function notFoundImg() {
     (0, _notiflixDefault.default).Notify.failure("Sorry, there are no images matching your search query. Please try again.");
 }
-function alertEndOfSearch() {
+function endImg() {
     (0, _notiflixDefault.default).Notify.failure("We're sorry, but you've reached the end of search results.");
 }
 
-},{"./sass/index.scss":"9OQSl","./js/fetchImages":"dOg5x","./js/createCard":"e0Dz6","./js/scroll":"55W1t","notiflix":"5WWYd","simplelightbox":"9ydBq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9OQSl":[function() {},{}],"dOg5x":[function(require,module,exports) {
+},{"./sass/index.scss":"9OQSl","./js/fetchImages":"dOg5x","./js/createCard":"e0Dz6","notiflix":"5WWYd","simplelightbox":"9ydBq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9OQSl":[function() {},{}],"dOg5x":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "fetchImages", ()=>fetchImages);
 var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
-(0, _axiosDefault.default).defaults.baseURL = "https://pixabay.com/api/";
+BASE_URL = "https://pixabay.com/api/";
 const KEY = "31809687-1b4d5b3e9d6d327e923c506e9";
-async function fetchImages(query, page, perPage) {
-    const response = await (0, _axiosDefault.default).get(`?key=${KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${perPage}`);
-    return response;
+async function fetchImages(query, page, per_page) {
+    try {
+        return response = await (0, _axiosDefault.default).get(`?key=${KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${per_page}`);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 },{"axios":"jo6P5","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jo6P5":[function(require,module,exports) {
@@ -4814,7 +4813,7 @@ parcelHelpers.export(exports, "createCard", ()=>createCard);
 const gallery = document.querySelector(".gallery");
 function createCard(images) {
     const markup = images.map((image)=>{
-        const { id , largeImageURL , webformatURL , tags , likes , views , comments , downloads  } = image;
+        const { largeImageURL , id , webformatURL , tags , likes , views , comments , downloads  } = image;
         return `
         <a class="gallery__link" href="${largeImageURL}">
           <div class="gallery-item" id="${id}">
@@ -4830,27 +4829,6 @@ function createCard(images) {
       `;
     }).join("");
     gallery.insertAdjacentHTML("beforeend", markup);
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"55W1t":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "onScroll", ()=>onScroll);
-parcelHelpers.export(exports, "onToTopBtn", ()=>onToTopBtn);
-const toTopBtn = document.querySelector(".btn-to-top");
-window.addEventListener("scroll", onScroll);
-toTopBtn.addEventListener("click", onToTopBtn);
-function onScroll() {
-    const scrolled = window.pageYOffset;
-    const coords = document.documentElement.clientHeight;
-    if (scrolled > coords) toTopBtn.classList.add("btn-to-top--visible");
-    if (scrolled < coords) toTopBtn.classList.remove("btn-to-top--visible");
-}
-function onToTopBtn() {
-    if (window.pageYOffset > 0) window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
 }
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5WWYd":[function(require,module,exports) {

@@ -2,9 +2,8 @@
 const gallery = document.querySelector('.gallery');
 
 export function createCard(images) {
-  const markup = images
-    .map(image => {
-      const { id, largeImageURL, webformatURL, tags, likes, views, comments, downloads } = image;
+  const markup = images.map(image => {
+      const { largeImageURL, id, webformatURL, tags, likes, views, comments, downloads } = image;
       return `
         <a class="gallery__link" href="${largeImageURL}">
           <div class="gallery-item" id="${id}">
@@ -20,6 +19,5 @@ export function createCard(images) {
       `;
     })
     .join('');
-
   gallery.insertAdjacentHTML('beforeend', markup);
 }
