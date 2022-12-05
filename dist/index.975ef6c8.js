@@ -578,7 +578,7 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "fetchImages", ()=>fetchImages);
 var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
-BASE_URL = "https://pixabay.com/api/";
+(0, _axiosDefault.default).defaults.baseURL = "https://pixabay.com/api/";
 const KEY = "31809687-1b4d5b3e9d6d327e923c506e9";
 async function fetchImages(query, page, per_page) {
     try {
